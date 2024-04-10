@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carlos Carrasco</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #424242; 
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center; 
+            background-color: rgb(231, 235, 255); 
+            border-radius: 10px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: white; 
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            background: linear-gradient(90deg, #0099ff, #6ef59b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        h2 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            background: linear-gradient(200deg, #0099ff, black);
+            background-clip: text;
+            color: transparent; 
+        }
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+            flex-wrap: wrap;
+        }
+        #codigo_fuente {
+            width: 100%;
+            height: 150px; 
+            resize: vertical;
+        }
+        .lexico, .sintactico {
+            width: calc(50% - 10px); 
+            
+        }
+        textarea {
+            width: 100%;
+            height: 100px; 
+            resize: vertical;
+            margin-bottom: 10px; 
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            /* Estilo moderno */
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            background-color: #6772e5;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #7795f8;
+        }
+        .text-center {
+            text-align: center;
+            margin-bottom: 1px; 
+            padding-top: 10px;
+            text-transform: uppercase;
+            background: linear-gradient(200deg, #0099ff, black);
+            background-clip: text;
+            color: transparent;            
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Syntactic and lexical analyzer</h1>
+        <form method="POST" action="/" enctype="multipart/form-data">
+            <div class="flex-container">
+                <h2 class="text-center">Code Analyzer</h2> <!-- Añadir la clase text-center -->
+                <textarea id="codigo_fuente" name="ingreso" placeholder="Enter text or upload a file"></textarea>
+            </div>
+            <button type="button" onclick="limpiarTexto()">Delete</button> <!-- Botón Limpiar -->
+            <div class="flex-container">
+                <div class="lexico">
+                    <h2>Lexical Analyzer</h2>
+                    <textarea id="lexico_result" readonly placeholder="Analysis of lexemes">{{ lexico_result }}</textarea>
+                    <button type="submit" name="lexico_button">Analyze</button>
+                </div>
+                <div class="sintactico">
+                    <h2>Syntactic Analyzer</h2>
+                    <textarea id="sintactico_result" readonly placeholder="Context-free grammar analysis">{{ sintactico_result }}</textarea>
+                    <button type="submit" name="sintactico_button">Analyze</button>
+                </div>
+            </div>
+            <input type="file" name="file" id="file" accept=".txt" onchange="loadFile(event)" title="Subir archivo">
+        </form>
+    </div>
+
+    <script>
+        // Función para cargar el archivo de texto seleccionado
+        function loadFile(event) {
+            var input = event.target;
+            var reader = new FileReader();
+            reader.onload = function(){
+                var text = reader.result;
+                document.getElementById('codigo_fuente').value = text;
+                // Guardar el texto en el almacenamiento local
+                localStorage.setItem('codigo_fuente', text);
+            };
+            reader.readAsText(input.files[0]);
+            // Cargar los resultados del análisis léxico y sintáctico desde el almacenamiento local si están disponibles
+            var lexicoResult = localStorage.getItem('lexico_result');
+            if (lexicoResult !== null) {
+                document.getElementById('lexico_result').value = lexicoResult;
+            }
+            var sintacticoResult = localStorage.getItem('sintactico_result');
+            if (sintacticoResult !== null) {
+                document.getElementById('sintactico_result').value = sintacticoResult;
+            }
+        };
+    
+        // Función para limpiar los textos
+        function limpiarTexto() {
+            document.getElementById('codigo_fuente').value = '';
+            // Limpiar solo los resultados del análisis léxico y sintáctico si se borra el texto del código fuente
+            document.getElementById('lexico_result').value = '';
+            document.getElementById('sintactico_result').value = '';
+            // Limpiar también en el almacenamiento local
+            localStorage.removeItem('codigo_fuente');
+            localStorage.removeItem('lexico_result'); // Remover el resultado del análisis léxico
+            localStorage.removeItem('sintactico_result'); // Remover el resultado del análisis sintáctico
+        }
+    
+        // Cargar el texto guardado en el almacenamiento local al cargar la página
+        window.onload = function() {
+            var storedText = localStorage.getItem('codigo_fuente');
+            if (storedText !== null) {
+                document.getElementById('codigo_fuente').value = storedText;
+            }
+        };
+    
+        // Evento para guardar el texto editado en el almacenamiento local
+        document.getElementById('codigo_fuente').addEventListener('input', function() {
+            var editedText = this.value;
+            localStorage.setItem('codigo_fuente', editedText);
+        });
+    </script>
+    
+</body>
+</html>
